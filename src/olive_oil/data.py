@@ -116,6 +116,7 @@ def average_replicates(df: pd.DataFrame) -> pd.DataFrame:
         df.groupby("sample_id", sort=False)[numeric_cols]
         .mean()
         .rename_axis("sample_id")
+        .copy()
     )
 
 
