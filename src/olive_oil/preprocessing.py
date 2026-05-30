@@ -8,6 +8,35 @@ from scipy.signal import savgol_filter
 SpectralTuple = tuple[np.ndarray, np.ndarray, list[str]]
 
 
+def select_region(
+    spectra: SpectralTuple,
+    start: float,
+    end: float,
+) -> SpectralTuple:
+    """Restrict spectra to an axis range (inclusive at both ends).
+
+    Works with both increasing (UV-Vis, HS-MS) and decreasing (FTIR) axes —
+    pass ``start`` and ``end`` in physical units regardless of axis direction.
+
+    Parameters
+    ----------
+    spectra:
+        ``(X, axis, sample_ids)`` tuple as returned by ``get_spectral_matrix``.
+    start:
+        Lower bound of the region in axis units (nm, cm⁻¹, m/z, …).
+    end:
+        Upper bound of the region in axis units.
+
+    Returns
+    -------
+    SpectralTuple with X and axis restricted to the selected region.
+    """
+    X, axis, sample_ids = spectra
+    lo, hi = min(start, end), max(start, end)
+    mask = (axis >= lo) & (axis <= hi)
+    return X[:, mask], axis[mask], sample_ids
+
+
 def row_profile(spectra: SpectralTuple) -> SpectralTuple:
     """Normalise each spectrum to unit row sum.
 
