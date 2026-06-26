@@ -12,5 +12,9 @@ matplotlib>=3.10
 seaborn>=0.13
 plotly>=6.7
 
+# Notebooks
+jupyter>=1.1
+ipykernel>=7.0
+
 # Dev / testing
 pytest>=9.0

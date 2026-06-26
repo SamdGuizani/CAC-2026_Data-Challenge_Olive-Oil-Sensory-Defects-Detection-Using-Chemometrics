@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest"]
 viz = ["matplotlib", "seaborn", "plotly"]
+notebooks = ["jupyter", "ipykernel"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
