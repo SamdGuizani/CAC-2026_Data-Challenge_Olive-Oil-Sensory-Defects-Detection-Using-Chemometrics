@@ -1,6 +1,8 @@
 # Additions to the standard Python.gitignore template, with some comments and recommendations for best practices.
 Data/
 CLAUDE.md
+PROJECT_CONTEXT.md
+pipeline.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
