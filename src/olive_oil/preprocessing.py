@@ -186,3 +186,54 @@ def mean_center(
     if center is None:
         center = X.mean(axis=0)
     return (X - center, axis, sample_ids), center
+
+
+def pqn(
+    spectra: SpectralTuple,
+    reference: np.ndarray | None = None,
+    eps: float = 1e-12,
+) -> tuple[SpectralTuple, np.ndarray]:
+    """Probabilistic Quotient Normalisation (Dieterle et al., 2006).
+
+    Corrects each spectrum for a sample-specific dilution factor estimated as the
+    **median** of its per-variable quotients against a reference spectrum. Unlike
+    total-area (TIC) normalisation, the median makes it robust when a few large
+    peaks dominate — a good fit for HS-MS count data.
+
+    Steps: (1) integral-normalise each spectrum to unit row sum; (2) divide by a
+    reference spectrum (the median of the normalised calibration spectra);
+    (3) take the median quotient per sample; (4) divide the spectrum by it.
+
+    Parameters
+    ----------
+    spectra:
+        ``(X, axis, sample_ids)`` tuple as returned by ``get_spectral_matrix``.
+    reference:
+        Pre-computed reference spectrum (shape ``(n_variables,)``). When ``None``,
+        the reference is the per-variable median of the integral-normalised ``X``.
+        Pass the **training-set** reference when transforming a test set to avoid
+        data leakage.
+    eps:
+        Variables whose reference value is ``<= eps`` are excluded from the median
+        quotient (guards against division by zero on empty channels).
+
+    Returns
+    -------
+    spectra_pqn:
+        Same tuple structure with X replaced by the PQN-normalised matrix.
+    reference_used:
+        The reference spectrum. Store this when fitting on a calibration set so it
+        can be reused on the test set.
+    """
+    X, axis, sample_ids = spectra
+    row_sums = X.sum(axis=1, keepdims=True)
+    X_tic = X / np.where(row_sums == 0.0, 1.0, row_sums)
+
+    if reference is None:
+        reference = np.median(X_tic, axis=0)
+
+    mask = reference > eps
+    quotients = X_tic[:, mask] / reference[mask]
+    med_q = np.median(quotients, axis=1, keepdims=True)
+    med_q = np.where(med_q == 0.0, 1.0, med_q)
+    return (X_tic / med_q, axis, sample_ids), reference

@@ -45,6 +45,7 @@ from .models import BlockSet
 from .preprocessing import (
     log_transform,
     mean_center,
+    pqn,
     row_profile,
     savgol_derivative,
     select_region,
@@ -74,7 +75,7 @@ _STATELESS_STEPS = {
 }
 
 # Stateful steps fit parameters on the calibration set and reuse them on test.
-_STATEFUL_STEPS = {"mean_center"}
+_STATEFUL_STEPS = {"mean_center", "pqn"}
 
 
 @dataclass
@@ -189,6 +190,11 @@ def _apply_recipe(
             train, center = mean_center(train, **kwargs)
             if test is not None:
                 test, _ = mean_center(test, center=center)
+
+        elif name == "pqn":
+            train, reference = pqn(train, **kwargs)
+            if test is not None:
+                test, _ = pqn(test, reference=reference)
 
         else:
             raise ValueError(

@@ -78,7 +78,7 @@ def as_blockset(blocks) -> BlockSet:
 
 # ── PLSScorer: supervised dimensionality reducer for one block ───────────────
 
-class PLSScorer(BaseEstimator, TransformerMixin):
+class PLSScorer(TransformerMixin, BaseEstimator):
     """Wrap ``PLSRegression`` as a transformer that returns X-scores.
 
     ``fit(X, y)`` learns discriminant latent directions; ``transform(X)`` returns
@@ -101,7 +101,7 @@ class PLSScorer(BaseEstimator, TransformerMixin):
 
 # ── PLSDAClassifier: PLS regression + threshold = a binary classifier ────────
 
-class PLSDAClassifier(BaseEstimator, ClassifierMixin):
+class PLSDAClassifier(ClassifierMixin, BaseEstimator):
     """PLS-DA classifier for a binary 0/1 target.
 
     Fits a :class:`PLSRegression` against the binary label and thresholds the
@@ -155,7 +155,7 @@ class PLSDAClassifier(BaseEstimator, ClassifierMixin):
 
 # ── MidLevelFusionTransformer: fuse N blocks into one score matrix ───────────
 
-class MidLevelFusionTransformer(BaseEstimator, TransformerMixin):
+class MidLevelFusionTransformer(TransformerMixin, BaseEstimator):
     """Fit one :class:`PLSScorer` per block and hstack the scores.
 
     Parameters
@@ -191,7 +191,7 @@ class MidLevelFusionTransformer(BaseEstimator, TransformerMixin):
 
 # ── MidLevelFusionClassifier: end-to-end estimator ───────────────────────────
 
-class MidLevelFusionClassifier(BaseEstimator, ClassifierMixin):
+class MidLevelFusionClassifier(ClassifierMixin, BaseEstimator):
     """End-to-end mid-level data-fusion classifier (GridSearchCV-compatible).
 
     Parameters
